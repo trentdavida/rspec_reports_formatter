@@ -139,6 +139,8 @@ class RspecHtmlFormatter < RSpec::Core::Formatters::BaseFormatter
   RSpec::Core::Formatters.register self, :example_started, :example_passed, :example_failed, :example_pending, :example_group_finished
 
   REPORT_PATH = ENV['REPORT_PATH'] || './rspec_html_reports'
+  REPORT_TEMPLATE_PATH = ENV['REPORT_TEMPLATE_PATH'] || File.dirname(__FILE__) + '/../templates/report.erb'
+  OVERVIEW_TEMPLATE_PATH = ENV['OVERVIEW_TEMPLATE_PATH'] || File.dirname(__FILE__) + '/../templates/overview.erb'
 
   def initialize(io_standard_out)
     create_reports_dir
@@ -210,7 +212,6 @@ class RspecHtmlFormatter < RSpec::Core::Formatters::BaseFormatter
           duration: @summary_duration
       }
 
-      REPORT_TEMPLATE_PATH = ENV['REPORT_TEMPLATE_PATH'] || File.dirname(__FILE__) + '/../templates/report.erb'
       template_file = File.read(REPORT_TEMPLATE_PATH)
 
       f.puts ERB.new(template_file).result(binding)
@@ -238,7 +239,6 @@ class RspecHtmlFormatter < RSpec::Core::Formatters::BaseFormatter
       @durations = duration_keys.zip(duration_values.map{|d| d.to_f.round(5)})
       @summary_duration = duration_values.map{|d| d.to_f.round(5)}.inject(0) { |sum, i| sum + i }.to_s(:rounded, precision: 5)
       @total_examples = @passed + @failed + @pending
-      OVERVIEW_TEMPLATE_PATH = ENV['OVERVIEW_TEMPLATE_PATH'] || File.dirname(__FILE__) + '/../templates/overview.erb'
       template_file = File.read(OVERVIEW_TEMPLATE_PATH)
       f.puts ERB.new(template_file).result(binding)
     end
